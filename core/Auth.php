@@ -26,9 +26,7 @@ class Auth
 
     public static function login(string $table, array $field, string $password)
     {
-        $db = new DB();
-
-        $query = $db->table($table)->select('*');
+        $query = DB::table($table)->select('*');
         foreach ($field as $key => $value) {
             $query->where($key, '=', $value);
         }
@@ -49,8 +47,7 @@ class Auth
         $remember_token = bin2hex(random_bytes(32));
 
         try {
-            $db = new DB();
-            $db->table($table)->where('id', '=', $_SESSION['authenticated_user']['id'])->update(['remember_token' => $remember_token]);
+            DB::table($table)->where('id', '=', $_SESSION['authenticated_user']['id'])->update(['remember_token' => $remember_token]);
             setcookie('remember_token', $remember_token, time() + 3600 * 24 * 30, '/');
 
             return isset($_SESSION['authenticated_user']);
@@ -63,8 +60,7 @@ class Auth
     public static function checkRememberMe($table)
     {
         if (isset($_COOKIE['remember_token'])) {
-            $db = new DB();
-            $result = $db->table($table)->where('remember_token', '=', $_COOKIE['remember_token'])->first();
+            $result = DB::table($table)->where('remember_token', '=', $_COOKIE['remember_token'])->first();
             if ($result) {
                 $_SESSION['authenticated_user'] = $result;
                 return true;

@@ -2,10 +2,16 @@
 
 class DB
 {
-    protected $connection;
-    protected $table;
-    protected $sql = '';
-    protected $where = [];
+    protected mysqli $connection;
+    protected string $table;
+    protected string $sql = '';
+    protected array $where = [];
+    protected array $join = [];
+    protected array $having = [];
+    protected array $groupBy = [];
+    protected array $orderBy = [];
+    protected array $limit = [];
+    protected array $offset = [];
 
     public function __construct()
     {
@@ -25,13 +31,13 @@ class DB
 
 
 
-    public function table($table)
+    public static function table(string $table)
     {
-        $this->reset();
+        $instance = new self();
+        $instance->reset();
+        $instance->table = $table;
 
-        $this->table = $table;
-
-        return $this;
+        return $instance;
     }
 
 
@@ -45,7 +51,7 @@ class DB
 
 
 
-    public function where($column, $operator, $value)
+    public function where(string $column, string $operator, string $value): self
     {
         $value = $this->escape($value);
 
@@ -59,15 +65,10 @@ class DB
     }
 
 
-    public function orWhere($column, $operator, $value)
+    public function orWhere(string $column, string $operator, string $value): self
     {
         $value = $this->escape($value);
-
-        if (empty($this->where)) {
-            $this->where[] = "WHERE {$column} {$operator} '{$value}'";
-        } else {
-            $this->where[] = "OR {$column} {$operator} '{$value}'";
-        }
+        $this->where[] = "OR {$column} {$operator} '{$value}'";
 
         return $this;
     }
@@ -77,13 +78,11 @@ class DB
     public function get()
     {
         if (empty($this->sql)) {
-            $this->sql = "SELECT * FROM {$this->table}";
+            $this->select('*');
         }
 
-        $this->sql .= ' ' . implode(' ', $this->where);
-
+        $this->buildSql();
         $query = $this->connection->query($this->sql);
-
         $this->reset();
 
         return $query->fetch_all(MYSQLI_ASSOC);
@@ -94,12 +93,11 @@ class DB
     public function first()
     {
         if (empty($this->sql)) {
-            $this->sql = "SELECT * FROM {$this->table}";
+            $this->select('*');
+            $this->limit(1);
         }
 
-        $this->sql .= ' ' . implode(' ', $this->where);
-
-        $this->sql .= " LIMIT 1";
+        $this->buildSql();
 
         $query = $this->connection->query($this->sql);
 
@@ -109,7 +107,7 @@ class DB
     }
 
 
-    public function insert($data)
+    public function insert(array $data): bool
     {
         $columns = implode(',', array_keys($data));
 
@@ -126,8 +124,13 @@ class DB
         return $query;
     }
 
+    public function insertId(): int
+    {
+        return $this->connection->insert_id;
+    }
 
-    public function update($data)
+
+    public function update(array $data): bool
     {
         $fields = [];
 
@@ -148,9 +151,14 @@ class DB
         return $query;
     }
 
+    public function updatedRows(): int
+    {
+        return $this->connection->affected_rows;
+    }
 
 
-    public function delete()
+
+    public function delete(): bool
     {
         $this->sql = "DELETE FROM {$this->table}";
 
@@ -166,14 +174,20 @@ class DB
 
     public function count($column = '*')
     {
-        $this->sql = "SELECT COUNT({$column}) as total FROM {$this->table}";
+        if (empty($this->sql)) {
+            $this->select("COUNT({$column}) as {$this->table}_total");
+        }
 
-        return $this;
+        $this->buildSql();
+        $query = $this->connection->query($this->sql);
+        $this->reset();
+
+        return $query->fetch_assoc()[$this->table . '_total'];
     }
 
 
 
-    public function query($sql)
+    public function query(string $sql): bool|mysqli_result
     {
         $query = $this->connection->query($sql);
 
@@ -194,65 +208,60 @@ class DB
         $this->where = [];
     }
 
-    public function join($table, $condition, $type = 'INNER')
+    public function join(string $table, string $condition, string $type = 'INNER')
     {
-        $this->sql .= " {$type} JOIN {$table} ON {$condition}";
+        $this->join[] = "{$type} JOIN {$table} ON {$condition}";
         return $this;
     }
 
-    public function leftJoin($table, $condition)
+    public function leftJoin(string $table, string $condition)
     {
         return $this->join($table, $condition, 'LEFT');
     }
 
-    public function rightJoin($table, $condition)
+    public function rightJoin(string $table, string $condition)
     {
         return $this->join($table, $condition, 'RIGHT');
     }
 
-    public function fullJoin($table, $condition)
+    public function fullJoin(string $table, string $condition)
     {
         return $this->join($table, $condition, 'FULL');
     }
 
-    public function groupBy($column)
+    public function groupBy(string $column)
     {
-        $this->sql .= " GROUP BY {$column}";
+        $this->groupBy[] = "GROUP BY {$column}";
         return $this;
     }
 
-    public function orderBy($column, $direction = 'ASC')
+    public function orderBy(string $column, string $direction = 'ASC')
     {
-        $this->sql .= " ORDER BY {$column} {$direction}";
+        $this->orderBy[] = "{$column} {$direction}";
         return $this;
     }
 
     public function limit(int $limit)
     {
-        $this->sql .= " LIMIT {$limit} ";
+        $this->limit[] = "LIMIT {$limit}";
         return $this;
     }
 
     public function offset(int $offset)
     {
-        $this->sql .= " OFFSET {$offset} ";
+        $this->offset[] = "OFFSET {$offset}";
         return $this;
     }
 
     public function paginate($page = 1, $limit = 10)
     {
         $offset = ($page - 1) * $limit;
-        if (empty($this->sql)) {
-            $this->sql = "SELECT * FROM {$this->table}";
-        }
-
-        $this->sql .= ' ' . implode(' ', $this->where);
-
 
 
         $this->limit($limit);
         $this->offset($offset);
 
+        $this->buildSql();
         $query = $this->connection->query($this->sql);
 
         $this->reset();
@@ -272,7 +281,19 @@ class DB
 
     public function toSql()
     {
+
+        $this->buildSql();
+        return $this->sql;
+    }
+
+    protected function buildSql()
+    {
         $this->sql .= ' ' . implode(' ', $this->where);
+        $this->sql .= ' ' . implode(' ', $this->join);
+        $this->sql .= ' ' . implode(' ', $this->groupBy);
+        $this->sql .= ' ' . implode(' ', $this->orderBy);
+        $this->sql .= ' ' . implode(' ', $this->limit);
+        $this->sql .= ' ' . implode(' ', $this->offset);
 
         return $this->sql;
     }

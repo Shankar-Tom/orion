@@ -1,9 +1,11 @@
 <?php
+include_once 'core/DB.php';
+include_once 'core/JWT.php';
 
-class MainController extends controller
+class MainController
 {
     public function home()
     {
-        $this->view('home');
+        print_r(JWT::generate());
     }
 }

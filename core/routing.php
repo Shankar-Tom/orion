@@ -30,7 +30,6 @@ class Route
     protected function callController($controller, $method, $data)
     {
 
-        require_once "core/controller.php";
         require_once "app/controllers/" . $controller . ".php";
         $controller = new $controller();
         $data != null ? $controller->$method($data) : $controller->$method();
