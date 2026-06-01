@@ -40,6 +40,20 @@ class Validator
                         if ($value !== '' && !is_numeric($value)) {
                             $this->addError($field, "{$field} must be a number.");
                         }
+                    case 'file':
+                        if ($value !== '' && !is_file($value)) {
+                            $this->addError($field, "{$field} must be a file.");
+                        }
+                        break;
+                    case 'image':
+                        if ($value !== '' && !File::isImage($value)) {
+                            $this->addError($field, "{$field} must be an image.");
+                        }
+                        break;
+                    case 'document':
+                        if ($value !== '' && !File::isDocument($value)) {
+                            $this->addError($field, "{$field} must be a document.");
+                        }
                         break;
                 }
             }
