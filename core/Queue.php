@@ -1,0 +1,16 @@
+<?php
+include 'core/DB.php';
+class Queue
+{
+    public static function dispatch($jobClass, $data = [])
+    {
+        $payload = json_encode([
+            'job' => $jobClass,
+            'data' => $data
+        ]);
+
+        DB::table('jobs')->insert([
+            'payload' => $payload
+        ]);
+    }
+}
