@@ -1,0 +1,15 @@
+<?php
+
+return [
+    'action' => 'create',
+    'name' => 'Migration',
+    'migration' => 'create_Migration_table2026_06_01_235653',
+    'columns' => [
+        'id' => 'int(11) NOT NULL AUTO_INCREMENT',
+        'name' => 'varchar(255) NOT NULL',
+
+        'created_at' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
+        'updated_at' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+    ],
+    'primary' => 'id',
+];

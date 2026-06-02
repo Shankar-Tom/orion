@@ -16,10 +16,28 @@ switch ($command) {
 
         passthru("php -S {$host}:{$port} index.php");
         break;
+    case 'queue':
+        echo "Starting Orion Queue Worker...\n";
+        passthru("php app/commands/queue_worker.php");
+        break;
+    case 'create:controller':
+        echo "Creating Orion Controller...\n";
+        passthru("php app/commands/controller_creator.php " . $argv[2]);
+        break;
+    case 'create:table':
+        echo "Creating Orion Table...\n";
+        passthru("php app/commands/table_creator.php " . $argv[2] . " " . $argv[3]);
+        break;
+    case 'migrate':
+        echo "Running Orion Migrations...\n";
+        passthru("php app/commands/db_migrator.php");
+        break;
 
     default:
         echo "Orion Framework CLI\n";
         echo "Available commands:\n";
-        echo "  serve\n";
+        echo "  start\n";
+        echo "  queue\n";
+        echo "  create:controller <controller_name>\n";
         break;
 }

@@ -1,0 +1,8 @@
+{
+    "name": "shankar/orion",
+    "description": "Lightweight php framework",
+    "type": "project",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "require": {}
+}
