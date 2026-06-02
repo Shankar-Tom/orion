@@ -28,7 +28,7 @@ switch ($command) {
         echo "Creating Orion Table...\n";
         passthru("php app/commands/table_creator.php " . $argv[2] . " " . $argv[3]);
         break;
-    case 'migrate':
+    case 'generate:tables':
         echo "Running Orion Migrations...\n";
         passthru("php app/commands/db_migrator.php");
         break;
@@ -39,5 +39,7 @@ switch ($command) {
         echo "  start\n";
         echo "  queue\n";
         echo "  create:controller <controller_name>\n";
+        echo "  create:table <table_name> <action>\n";
+        echo "  generate:tables\n";
         break;
 }

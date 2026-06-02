@@ -36,10 +36,18 @@ foreach ($migrations as $migration) {
 
             $query = "CREATE TABLE IF NOT EXISTS {$tableName} (" . implode(', ', $columnDefinitions) . ", PRIMARY KEY ({$primary}))";
         }
-
-        echo $query . "\n";
-
-
+        if ($action == 'drop') {
+            $query = "DROP TABLE IF EXISTS {$tableName}";
+        }
+        if ($action == 'alter') {
+            $query = "ALTER TABLE {$tableName} ADD COLUMN {$columns}";
+        }
+        if ($action == 'rename') {
+            $query = "ALTER TABLE {$tableName} RENAME TO {$columns}";
+        }
+        if ($action == 'drop_column') {
+            $query = "ALTER TABLE {$tableName} DROP COLUMN {$columns}";
+        }
         $result = $db->query($query);
         if ($tableName !== 'Migration' && $result) {
             updateMigrationTable($migrationName);
@@ -48,13 +56,13 @@ foreach ($migrations as $migration) {
 }
 
 
-function updateMigrationTable($migrationName)
+function updateMigrationTable(string $migrationName): bool
 {
     global $db;
     return $db->table('Migration')->insert(['name' => $migrationName]);
 }
 
-function tableExists($tableName)
+function tableExists(string $tableName): bool
 {
     global $db;
     return $db->query("SHOW TABLES LIKE '{$tableName}'")->num_rows > 0;
