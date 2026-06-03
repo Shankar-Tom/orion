@@ -1,5 +1,7 @@
 <?php
 
+namespace Core;
+
 class JWT
 {
     public static function generate(): string

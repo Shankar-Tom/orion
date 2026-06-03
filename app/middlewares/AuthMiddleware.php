@@ -1,6 +1,8 @@
 <?php
 
-include_once 'core/Auth.php';
+namespace App\Middlewares;
+
+use Core\Auth;
 
 class AuthMiddleware
 {

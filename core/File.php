@@ -1,5 +1,7 @@
 <?php
 
+namespace Core;
+
 class File
 {
     public static function upload($file, string $path): string

@@ -1,6 +1,9 @@
 <?php
-include_once 'core/DB.php';
-include_once 'core/JWT.php';
+
+namespace App\Controllers;
+
+use Core\JWT;
+
 
 class MainController
 {

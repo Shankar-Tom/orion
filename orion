@@ -32,6 +32,10 @@ switch ($command) {
         echo "Running Orion Migrations...\n";
         passthru("php app/commands/db_migrator.php");
         break;
+    case 'create:class':
+        echo "Creating Orion Class...\n";
+        passthru("php app/commands/create_class.php " . $argv[2]);
+        break;
 
     default:
         echo "Orion Framework CLI\n";

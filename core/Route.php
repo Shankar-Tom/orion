@@ -1,5 +1,7 @@
 <?php
 
+namespace Core;
+
 class Route
 {
     private static $routes = [];
@@ -30,7 +32,7 @@ class Route
     protected function callController($controller, $method, $data)
     {
 
-        require_once "app/controllers/" . $controller . ".php";
+        $controller = "App\\Controllers\\$controller";
         $controller = new $controller();
         $data != null ? $controller->$method($data) : $controller->$method();
         die;

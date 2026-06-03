@@ -1,4 +1,7 @@
 <?php
+
+namespace Core;
+
 class Response
 {
     public static function view(string $file, array $data)

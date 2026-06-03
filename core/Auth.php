@@ -1,5 +1,8 @@
 <?php
-include_once 'DB.php';
+
+namespace Core;
+
+use Core\DB;
 
 class Auth
 {

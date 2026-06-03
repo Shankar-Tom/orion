@@ -1,5 +1,9 @@
 <?php
-include 'core/DB.php';
+
+namespace Core;
+
+use Core\DB;
+
 class Queue
 {
     public static function dispatch($jobClass, $data = [])

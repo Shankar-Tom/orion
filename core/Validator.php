@@ -1,5 +1,9 @@
 <?php
 
+namespace Core;
+
+use Core\File;
+
 class Validator
 {
     private array $errors = [];

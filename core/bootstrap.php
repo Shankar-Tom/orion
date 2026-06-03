@@ -1,4 +1,9 @@
 <?php
+
+namespace Core;
+
+use Core\Route;
+
 class Bootstrap
 {
     public function __construct()
@@ -14,7 +19,6 @@ class Bootstrap
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
 
-        require 'core/routing.php';
         $router = new Route();
         require 'routes.php';
         $router->handle();

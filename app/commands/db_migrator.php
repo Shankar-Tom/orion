@@ -1,5 +1,6 @@
 <?php
-include_once 'core/DB.php';
+
+use Core\DB;
 
 $db = new DB();
 echo "Starting migrations...\n";
@@ -22,8 +23,10 @@ foreach ($migrations as $migration) {
     $checkIfExists = null;
 
 
-    if (tableExists('Migration') == false) {
+    if (tableExists('migration') == false) {
         $db->query("CREATE TABLE Migration (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP , updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)");
+        updateMigrationTable('migration');
+        continue;
     } else {
         $checkIfExists = $db->table('Migration')->where('name', '=', $migrationName)->first();
     }
@@ -49,7 +52,7 @@ foreach ($migrations as $migration) {
             $query = "ALTER TABLE {$tableName} DROP COLUMN {$columns}";
         }
         $result = $db->query($query);
-        if ($tableName !== 'Migration' && $result) {
+        if ($result) {
             updateMigrationTable($migrationName);
         }
     }

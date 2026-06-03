@@ -1,5 +1,6 @@
 <?php
-include 'core/DB.php';
+
+use Core\DB;
 
 
 $jobs = DB::table('jobs')->where('status', '=', 'pending')->orderBy('id', 'asc')->limit(1)->get();

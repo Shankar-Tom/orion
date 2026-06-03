@@ -1,5 +1,9 @@
 <?php
 
+namespace Core;
+
+use mysqli;
+
 class DB
 {
     protected mysqli $connection;
@@ -187,7 +191,7 @@ class DB
 
 
 
-    public function query(string $sql): bool|mysqli_result
+    public function query(string $sql)
     {
         $query = $this->connection->query($sql);
 
