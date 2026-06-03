@@ -25,6 +25,6 @@ return [
 ];
 ";
 
-file_put_contents('migrations/' . date('Y_m_d_His') . '_' . strtolower($tableName) . '.php', $tableContent);
+file_put_contents('migrations/' . date('Y_m_d_His') . '_' . $action . '_' . strtolower($tableName) . '.php', $tableContent);
 
 echo "Table created successfully.\n";
