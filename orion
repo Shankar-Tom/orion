@@ -18,32 +18,27 @@ switch ($command) {
         break;
     case 'queue':
         echo "Starting Orion Queue Worker...\n";
-        passthru("php app/commands/queue_worker.php");
+        passthru("php core/commands/queue_worker.php");
         break;
     case 'create:controller':
         echo "Creating Orion Controller...\n";
-        passthru("php app/commands/controller_creator.php " . $argv[2]);
+        passthru("php core/commands/controller_creator.php " . $argv[2]);
         break;
-    case 'create:table':
+    case 'create:schema':
         echo "Creating Orion Table...\n";
-        passthru("php app/commands/table_creator.php " . $argv[2] . " " . $argv[3]);
+        passthru("php core/commands/table_creator.php " . $argv[2] . " " . 'create');
         break;
     case 'generate:tables':
         echo "Running Orion Migrations...\n";
-        passthru("php app/commands/db_migrator.php");
+        passthru("php core/commands/db_migrator.php");
         break;
-    case 'create:class':
-        echo "Creating Orion Class...\n";
-        passthru("php app/commands/create_class.php " . $argv[2]);
-        break;
-
     default:
         echo "Orion Framework CLI\n";
         echo "Available commands:\n";
         echo "  start\n";
         echo "  queue\n";
         echo "  create:controller <controller_name>\n";
-        echo "  create:table <table_name> <action>\n";
+        echo "  create:schema <schema_name> <action>\n";
         echo "  generate:tables\n";
         break;
 }

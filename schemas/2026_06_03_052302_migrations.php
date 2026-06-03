@@ -2,8 +2,8 @@
 
 return [
     'action' => 'create',
-    'name' => 'migrations',
-    'migration' => 'create_migrations_table2026_06_03_052302',
+    'name' => 'schema_manager',
+    'migration' => 'create_schema_manager_table_2026_06_03_052302',
     'columns' => [
         'id' => 'int(11) NOT NULL AUTO_INCREMENT',
         'created_at' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',

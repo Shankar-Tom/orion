@@ -1,11 +1,12 @@
 <?php
+include 'vendor/autoload.php';
 
 use Core\DB;
 
 $db = new DB();
 echo "Starting migrations...\n";
 
-$migrations = scandir('migrations');
+$migrations = scandir('schemas');
 
 
 foreach ($migrations as $migration) {
@@ -13,7 +14,7 @@ foreach ($migrations as $migration) {
         continue;
     }
 
-    $migrationData = include 'migrations/' . $migration;
+    $migrationData = include 'schemas/' . $migration;
     $action = $migrationData['action'];
     $tableName = $migrationData['name'];
     $columns = $migrationData['columns'];
@@ -23,12 +24,12 @@ foreach ($migrations as $migration) {
     $checkIfExists = null;
 
 
-    if (tableExists('migration') == false) {
-        $db->query("CREATE TABLE Migration (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP , updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)");
-        updateMigrationTable('migration');
+    if (tableExists('schema_manager') == false) {
+        $db->query("CREATE TABLE schema_manager (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP , updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)");
+        updateMigrationTable('schema_manager');
         continue;
     } else {
-        $checkIfExists = $db->table('Migration')->where('name', '=', $migrationName)->first();
+        $checkIfExists = $db->table('schema_manager')->where('name', '=', $migrationName)->first();
     }
     if (!$checkIfExists) {
         if ($action == 'create') {
@@ -62,7 +63,7 @@ foreach ($migrations as $migration) {
 function updateMigrationTable(string $migrationName): bool
 {
     global $db;
-    return $db->table('Migration')->insert(['name' => $migrationName]);
+    return $db->table('schema_manager')->insert(['name' => $migrationName]);
 }
 
 function tableExists(string $tableName): bool
